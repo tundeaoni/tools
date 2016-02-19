@@ -2,25 +2,60 @@
 
 require 'json'
 
+
+
+# define functions
+def list_container_instances(name='default')
+	response = %x(aws ecs list-container-instances --cluster #{name})
+	results = JSON.parse(response)
+	i = 1;
+
+	puts "*************List of container instances in #{name} cluster*****************"
+	results.each do |key , result|
+		puts result
+	end
+end
+
+def requirements
+	response = %x(which aws)
+
+	if response.empty?
+		exec("echo aws cli wasnt found. This is a requirement && exit")
+	end
+	
+end
+
+#check for requirements
+requirements
+
 if ARGV.empty?
   # if no argument exit
+  # should display help before exit
   exec("echo no option specified && exit")
 end
 
+cmd = ARGV[0]
 
-list_clusters = %x(aws ecs list-clusters)
-list_clusters = %x(aws ecs describe-clusters)
+# list_clusters = %x(aws ecs list-clusters)
+# list_clusters = %x(aws ecs describe-clusters)
 
 case cmd
   # resolve commands to run
-  when 'db'
+  when 'list-servers'
+  	if ARGV[1].nil? 
+		list_container_instances()
+  	else
+  		list_container_instances(ARGV[1])
+  	end
     
   when 'help'
     puts 'help, db, cache, test'
     
   else
-    puts "'#{File.basename(__FILE__)} #{cmd}' is not a valid command."
+    puts "'#{cmd}' is not a valid command."
 end
+
+
 
 
 

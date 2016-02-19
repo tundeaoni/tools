@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-# have something like
-# iroko aws:ecs [list-servers argument2 ....] 
 
 #declare variables
 scripts_folder_name = 'scripts'
@@ -42,15 +40,11 @@ command_arguments = ARGV.join(' ')
 # Execute!
 case cmd
   # resolve commands to run
-  when 'db'
-    # sample scenaro where command name might not match exactly with the command file script name 
-    exec("#{root}/#{scripts_folder_name}/database/#{sub} #{command_arguments}")
-  
   when 'aws'
     exec("#{root}/#{scripts_folder_name}/aws/#{sub} #{command_arguments}")
 
   when 'cron', 'search', 'deploy'
-    exec("#{root}/#{scripts_folder_name}/#{cmd} #{sub} #{command_arguments}")
+    # exec("#{root}/#{scripts_folder_name}/#{cmd} #{sub} #{command_arguments}")
     
   when 'cache'
     puts 'Cache CLI controls have not yet been implemented'
