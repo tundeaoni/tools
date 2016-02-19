@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+
+# have something like
+# iroko aws:ecs [list-servers argument2 ....] 
+
+#declare variables
+scripts_folder_name = 'scripts'
+
+# Get the project root folder.. by symlink'd bin command or by absolute link
+# ln -s ./tools/ /usr/local/bin/
+begin
+    dir = File.readlink(__FILE__)
+rescue StandardError => e
+    dir = __FILE__
+end
+
+
+# resolve current file root path
+root = File.expand_path(File.dirname(dir) )
+
+
+
+# has any argument been passed
+#puts ARGV.public_methods
+if ARGV.empty?
+  # if no argument exit
+  exec("echo no arguments passed && exit")
+end
+  
+# Parse the inputs
+if ARGV[0].include?(':')
+  cmd, sub = ARGV[0].split(':') 
+else
+  cmd = ARGV[0]
+end
+
+# pop the cmd from ARGV
+ARGV.shift
+
+command_arguments = ARGV.join(' ')
+
+# Execute!
+case cmd
+  # resolve commands to run
+  when 'db'
+    # sample scenaro where command name might not match exactly with the command file script name 
+    exec("#{root}/#{scripts_folder_name}/database/#{sub} #{command_arguments}")
+  
+  when 'aws'
+    exec("#{root}/#{scripts_folder_name}/aws/#{sub} #{command_arguments}")
+
+  when 'cron', 'search', 'deploy'
+    exec("#{root}/#{scripts_folder_name}/#{cmd} #{sub} #{command_arguments}")
+    
+  when 'cache'
+    puts 'Cache CLI controls have not yet been implemented'
+    
+  when 'help'
+    puts 'help, db, cache, test'
+    
+  else
+    puts "'#{File.basename(__FILE__)} #{cmd}' is not a valid command."
+end
